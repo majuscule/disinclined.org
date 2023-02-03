@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
 
-  {%- include html-header.html -%}
+  {%- include head.html -%}
 
   <body>
 
-    {%- include head.html -%}
-
     <main>
       <div id="wrapper">
-        <a class=title href="{{site.baseurl}}">{{site.name}}</a>
+        {%- include header.html %}
         {{ content }}
       </div>
     </main>
