@@ -1,0 +1,12 @@
+<div id='exhibit'>
+    {% for exhibit in site.data.personal-projects %}
+    <div class='exhibit' id='{{exhibit.name}}'>
+        <h1 id='{{exhibit.name}}'>
+            <a href='/git/{{exhibit.name}}/'>
+                {{exhibit.name}}
+            </a>
+        </h1>
+        {{exhibit.description}}
+    </div>
+    {% endfor %}
+</div>

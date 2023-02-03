@@ -1,0 +1,36 @@
+- name: minimax
+  description: |
+    Unbeatable tictactoe.
+    <br><br>
+    Uses the <a href="https://en.wikipedia.org/wiki/Minimax">minimax algorithm</a>.
+
+- name: dylansserver
+  description: |
+    The initial instance of this server, which once ran it's namesake virtual domain as a custom MVC framework (it had a few more features then). It also ran my mailserver, DNS server, git server, and automated deployments and backups.
+- name: simpletimingattack
+  description: |
+    This program implements a <a href='http://en.wikipedia.org/wiki/Timing_attack'>simple timing attack</a>. It measures the execution time of a target program over a number of iterations, rotating through a character set and appending the fastest (or slowest) character to the result.
+
+- name: cellular-automaton
+  description: |
+    One and two dimensional cellular automata animated on an HTML canvas. Two dimensional automaton seeds can be drawn on the screen and animated.
+
+- name: i_like_pandora
+  description: |
+    Searches YouTube for what you like on Pandora. Then downloads the first video.
+
+- name: matrixnullspace
+  description: |
+    This web application written in Python calculates the null space, eigenvalues, and determinant of an arbitrary matrix.
+
+- name: irssi-notify
+  description: |
+    irssi-notify forwards IRC notifications over a TCP/IP socket for local desktop alerts from a remote GNU/Screen'd session.
+
+- name: powermate
+  description: |
+    This Haskell program uses the <a href="https://aur.archlinux.org/packages.php?ID=17608">haskell-powermate</a> bindings to control Alsa, MPD and Pianobar from a <a href="http://store.griffintechnology.com/powermate-622">Griffin PowerMate</a> supporting long presses and twist motions.
+
+- name: fvlc
+  description: |
+    This bash script listens for hidden outbound HTTP requests for flash video files and restarts the stream in a chosen application.

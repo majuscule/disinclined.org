@@ -2,4 +2,9 @@ title: disinclined
 name: Dylan Lloyd
 email: dylan@disinclined.org
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://disinclined.org"
+url: https://disinclined.org
+
+defaults:
+  -
+    values:
+      layout: standard

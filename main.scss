@@ -96,7 +96,7 @@ main {
 }
 
 .title {
-    margin-left:17px;
+    margin-left: 42px;
     color:black;
     font-family:'bree_serifregular';
     font-size: 404%;
@@ -112,7 +112,28 @@ main {
 }
 
 
+// ----------------------------------
+// Index Specific
+// ----------------------------------
 
 
+#exhibit {
+    float:right;
+    margin-left:17px;
+    font-family:InconsolataMedium;
+    font-size:1.4em;
+}
 
+.exhibit {
+    width:300px;
+    min-height:475px;
+    border:1px solid #000;
+    display:none;
+    text-align:left;
+    padding:10px;
+}
 
+.exhibit h1 {
+    margin-bottom:15px;
+    font-size: 180%;
+}
