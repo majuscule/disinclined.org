@@ -1,6 +1,6 @@
 - name: nasm
   description: |
-    64 and 32 bit Netwide Assembly demonstration, in the form of a needlessly compli- cated hello world featuring a branch, macro and function.
+    64 and 32 bit Netwide Assembly demonstration, in the form of a needlessly complicated hello world featuring a branch, macro and function.
 
 - name: minimax
   description: |
