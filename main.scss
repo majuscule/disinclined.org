@@ -1,0 +1,118 @@
+---
+---
+
+
+// ----------------------------------
+// Fonts
+// ----------------------------------
+
+@font-face {
+    font-family: 'bree_serifregular';
+    src: url('/assets/fonts/breeserif-regular-webfont.eot');
+    src: url('/assets/fonts/breeserif-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/assets/fonts/breeserif-regular-webfont.woff2') format('woff2'),
+         url('/assets/fonts/breeserif-regular-webfont.woff') format('woff'),
+         url('/assets/fonts/breeserif-regular-webfont.ttf') format('truetype'),
+         url('/assets/fonts/breeserif-regular-webfont.svg#bree_serifregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'InconsolataMedium';
+    src: url('/assets/fonts/inconsolata-webfont.eot');
+    src: url('/assets/fonts/inconsolata-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/assets/fonts/inconsolata-webfont.woff') format('woff'),
+         url('/assets/fonts/inconsolata-webfont.ttf') format('truetype'),
+         url('/assets/fonts/inconsolata-webfont.svg#InconsolataMedium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MuseoSlab500';
+    src: url('/assets/fonts/museo_slab_500-webfont.eot');
+    src: url('/assets/fonts/museo_slab_500-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/assets/fonts/museo_slab_500-webfont.woff') format('woff'),
+         url('/assets/fonts/museo_slab_500-webfont.ttf') format('truetype'),
+         url('/assets/fonts/museo_slab_500-webfont.svg#MuseoSlab500') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+// ----------------------------------
+// Base Elements
+// ----------------------------------
+
+
+* {
+    margin:0;
+    padding:0;
+}
+
+body {
+    background-image: url('/assets/noisy.png');
+    font-family:InconsolataMedium;
+    margin-bottom: 15px;
+}
+
+h1,h2 {
+    font-size:256%;
+    font-family:'bree_serifregular';
+}
+
+h3 {
+    margin-top:15px;
+    margin-bottom:5px;
+    font-family:'bree_serifregular';
+}
+
+
+a {
+    text-decoration:none;
+}
+
+li {
+    list-style:none;
+    display:block;
+    margin-left:10px;
+}
+
+
+// ----------------------------------
+// Primary Structure
+// ----------------------------------
+
+
+body {
+    margin-top: 30px;
+}
+
+main {
+    width:960px;
+    margin:0px auto 0;
+}
+
+.title {
+    margin-left:17px;
+    color:black;
+    font-family:'bree_serifregular';
+    font-size: 404%;
+}
+
+#wrapper {
+    width:725px;
+    min-height:300px;
+    margin-bottom:20px;
+    margin-right:15px;
+    text-align:left;
+    padding:5px 5px 25px 20px;
+}
+
+
+
+
+
+
