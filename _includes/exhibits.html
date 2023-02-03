@@ -2,7 +2,7 @@
     {% for exhibit in site.data.personal-projects %}
     <div class='exhibit' id='{{exhibit.name}}'>
         <h1 id='{{exhibit.name}}'>
-            <a href='/git/{{exhibit.name}}/'>
+            <a href='/git/?p={{exhibit.name}}.git'>
                 {{exhibit.name}}
             </a>
         </h1>
