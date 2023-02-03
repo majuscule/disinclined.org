@@ -1,12 +1,12 @@
+- name: nasm
+  description: |
+    64 and 32 bit Netwide Assembly demonstration, in the form of a needlessly compli- cated hello world featuring a branch, macro and function.
+
 - name: minimax
   description: |
     Unbeatable tictactoe.
     <br><br>
     Uses the <a href="https://en.wikipedia.org/wiki/Minimax">minimax algorithm</a>.
-
-- name: nasm
-  description: |
-    64 and 32 bit Netwide Assembly demonstration, in the form of a needlessly compli- cated hello world featuring a branch, macro and function.
 
 - name: dylansserver
   description: |
