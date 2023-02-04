@@ -10,7 +10,7 @@
 
 - name: dylansserver
   description: |
-    The initial instance of this server, which once ran it's namesake virtual domain as a custom MVC framework (it had a few more features then). It also ran my mailserver, DNS server, git server, and automated deployments and backups.
+    The initial instance of this server, which once ran it's namesake virtual domain on a custom MVC framework (it had a few more features then). It also ran my mailserver, DNS server, git server, and automated deployments and backups.
 - name: simpletimingattack
   description: |
     This program implements a <a href='http://en.wikipedia.org/wiki/Timing_attack'>simple timing attack</a>. It measures the execution time of a target program over a number of iterations, rotating through a character set and appending the fastest (or slowest) character to the result.
