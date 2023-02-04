@@ -3,9 +3,17 @@ name: Dylan Lloyd
 email: dylan@disinclined.org
 baseurl: "" # the subpath of your site, e.g. /blog
 url: https://disinclined.org
-permalink: '/notes/:categories/:year/:month/:day/:title:output_ext'
+permalink: pretty
+paginate: 5
+paginate_path: notes/:num
+
+plugins:
+  - jekyll-archives
+  - jekyll-paginate
+
+jekyll-archives:
+  enabled: all
 
 defaults:
     values:
       layout: default
-
