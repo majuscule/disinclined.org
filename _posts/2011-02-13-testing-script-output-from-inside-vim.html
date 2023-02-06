@@ -1,0 +1,29 @@
+---
+layout: note
+---
+
+<p>This is a macro that's been very helpful for me while writing short scripts in Vim. It adds and comments out the output of your script (or any command) to the end of the current file.</p>
+<pre class="brush: bash;">
+G o&lt;Esc&gt; ma:r!./filename.sh&lt;Enter&gt; $ v 'a:norm 0i## &lt;Enter&gt;
+qt 'ajdG :r!./filename.sh&lt;Enter&gt; $ v 'a:norm 0i## &lt;Enter&gt; 'acc## Test output:&lt;Enter&gt; 'aq
+
+@t
+</pre>
+<br>
+<ul>
+  <li>G - cursor to end of file</li>
+  <li>o&lt;Esc&gt; - insert a new line</li>
+  <li>ma - create a mark in registry a</li>
+  <li>:r!./filename.sh - execute <i>filename.sh</i> and print output on next line</li>
+  <li>$ - cursor to end of line</li>
+  <li>v - switch to visual mode</li>
+  <li>'a - cursor to mark a</li>
+  <li>:norm  - applies the following action to each line selected</li>
+  <li>0i## &lt;Enter&gt; - cursor to the start of the line, switch to insert mode, and write "## "</li>
+  <li>qt - start recording a macro in register t</li>
+  <li>'ajdG - cursor to mark a and delete to end of file</li>
+  <li>:r!./filename.sh&lt;Enter&gt; $ - insert the output and cursor to end of file</li>
+  <li>'a:norm 0t## &lt;Enter&gt; - comment out output</li>
+  <li>'acc## Test output:&lt;Enter&gt; 'aq - cursor to mark a, adds comment, and ends the macro</li>
+  <li>@t will now test your output </li>
+</ul>

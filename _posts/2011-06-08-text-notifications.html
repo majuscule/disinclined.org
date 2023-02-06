@@ -1,0 +1,93 @@
+---
+layout: note
+---
+
+<p>Looking around my iPhone file system, I found the SMS database at /var/mobile/Library/SMS/sms.db. I decided to write a script to poll for new text mesages and notify me on my monitor. First things first, I scp'd the file over to my computer for inspection. Apple uses SQLite for its databases, which was new to me, so after an apt-cache search sqlite, apt-get install sqlite3, I opened up the database in my terminal.</p>
+
+<p>It took me some stumbling to disect the tables; the SQLite syntax is quite different from MySQL. I eventually found the .schema command to dump the table structure.</p>
+
+<pre class="brush: sql;">
+sqlite&gt; .schema
+CREATE TABLE _SqliteDatabaseProperties (key TEXT, value TEXT, UNIQUE(key));
+CREATE TABLE group_member (ROWID INTEGER PRIMARY KEY AUTOINCREMENT, group_id INTEGER, address TEXT, country TEXT);
+CREATE TABLE message (ROWID INTEGER PRIMARY KEY AUTOINCREMENT, address TEXT, date INTEGER, text TEXT, flags INTEGER, replace INTEGER, svc_center TEXT, group_id INTEGER, association_id INTEGER, height INTEGER, UIFlags INTEGER, version INTEGER, subject TEXT, country TEXT, headers BLOB, recipients BLOB, read INTEGER, smsc_ref INTEGER, dr_date INTEGER);
+CREATE TABLE msg_group (ROWID INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, newest_message INTEGER, unread_count INTEGER, hash INTEGER);
+CREATE TABLE msg_pieces (ROWID INTEGER PRIMARY KEY AUTOINCREMENT, message_id INTEGER, data BLOB, part_id INTEGER, preview_part INTEGER, content_type TEXT, height INTEGER, version INTEGER, flags INTEGER, content_id TEXT, content_loc TEXT, headers BLOB);
+CREATE INDEX message_flags_index ON message(flags);
+CREATE INDEX message_group_index ON message(group_id, ROWID);
+CREATE INDEX pieces_message_index ON msg_pieces(message_id);
+CREATE TRIGGER delete_message AFTER DELETE ON message WHEN NOT read(old.flags) BEGIN UPDATE msg_group SET unread_count = (SELECT unread_count FROM msg_group WHERE ROWID = old.group_id) - 1 WHERE ROWID = old.group_id; END;
+CREATE TRIGGER delete_newest_message AFTER DELETE ON message WHEN old.ROWID = (SELECT newest_message FROM msg_group WHERE ROWID = old.group_id) BEGIN UPDATE msg_group SET newest_message = (SELECT ROWID FROM message WHERE group_id = old.group_id AND ROWID = (SELECT max(ROWID) FROM message WHERE group_id = old.group_id)) WHERE ROWID = old.group_id; END;
+CREATE TRIGGER delete_pieces AFTER DELETE ON message BEGIN DELETE from msg_pieces where old.ROWID == msg_pieces.message_id; END;
+CREATE TRIGGER insert_newest_message AFTER INSERT ON message WHEN new.ROWID &gt;= IFNULL((SELECT MAX(ROWID) FROM message WHERE message.group_id = new.group_id), 0) BEGIN UPDATE msg_group SET newest_message = new.ROWID WHERE ROWID = new.group_id; END;
+CREATE TRIGGER insert_unread_message AFTER INSERT ON message WHEN NOT read(new.flags) BEGIN UPDATE msg_group SET unread_count = (SELECT unread_count FROM msg_group WHERE ROWID = new.group_id) + 1 WHERE ROWID = new.group_id; END;
+CREATE TRIGGER mark_message_read AFTER UPDATE ON message WHEN NOT read(old.flags) AND read(new.flags) BEGIN UPDATE msg_group SET unread_count = (SELECT unread_count FROM msg_group WHERE ROWID = new.group_id) - 1 WHERE ROWID = new.group_id; END;
+CREATE TRIGGER mark_message_unread AFTER UPDATE ON message WHEN read(old.flags) AND NOT read(new.flags) BEGIN UPDATE msg_group SET unread_count = (SELECT unread_count FROM msg_group WHERE ROWID = new.group_id) + 1 WHERE ROWID = new.group_id; END;
+</pre>
+
+<p>Trying some queries, I discovered that I had over 100 messages marked "unread" in the database, in spite of having no unread messages on my phone. I suspect this is due to buggy interactions from other packages I had installed. I needed to start with a clean slate, but `update message set read=1` was giving me the error "Error: no such function: read". Eventually I realized this was referring to a trigger. Unfortunately, SQLite does not give any way to temporarily disable a trigger, so I was forced to manually drop the triggers, run my update statement, and recreate the triggers. This can be done locally and copied back over (will require a reboot), or on the phone after installing the sqlite3 frontend there.</p>
+
+<pre class="brush: sql;">
+sqlite&gt; drop trigger mark_message_read;
+sqlite&gt; drop trigger mark_message_unread;
+sqlite&gt; update message set read=1;
+sqlite&gt; CREATE TRIGGER mark_message_read AFTER UPDATE ON message WHEN NOT read(old.flags) AND read(new.flags) BEGIN UPDATE msg_group SET unread_count = (SELECT unread_count FROM msg_group WHERE ROWID = new.group_id) - 1 WHERE ROWID = new.group_id; END;
+sqlite&gt; CREATE TRIGGER mark_message_unread AFTER UPDATE ON message WHEN read(old.flags) AND NOT read(new.flags) BEGIN UPDATE msg_group SET unread_count = (SELECT unread_count FROM msg_group WHERE ROWID = new.group_id) + 1 WHERE ROWID = new.group_id; END;
+</pre>
+
+<p>With the table up to date, the next step was simple:</p>
+
+<pre class="brush: bash;">
+while true;
+  do ssh mobile@10.0.0.2 sqlite3 "Library/SMS/sms.db 'select text from message where read=0;'";
+  sleep 3s;
+done;
+</pre>
+
+<p>This BASH command assumes that your SSH key is already trusted by the mobile user on the phone. After asking a friend to send me a test text, I was happy to see the text message output. The next step was to find the name of the sender. I found the contact database at '/var/mobile/Library/AddressBook/AddressBook.sqlitedb'.</p>
+
+<p>The database structure took me a lot of puzzling. Contact numbers are stored in a table separate from contact name information. Most painfully, SMS sender addresses are prepended with a plus sign in the message table; It took me some time to realize why I was getting zero results when joining the contact table. Also worth noting is that message.flags is set to 2 for received messages.</p>
+
+<pre class="brush: sql;">
+SELECT contact.first, contact.last, message.text
+  FROM message LEFT JOIN (
+    SELECT ABMultiValue.value,ABPerson.first,ABPerson.last
+      FROM ABPerson JOIN ABMultiValue
+      ON ABmultiValue.record_id=ABPerson.ROWID ) contact
+    ON contact.value=SUBSTR(message.address,2,LENGTH(message.address) )
+    where message.read=0 AND message.flags=2;
+</pre>
+
+<p> All that remained was to wrap the text message into a pretty NotifyOSD notification.</p>
+
+<pre class="brush: bash;">
+#!/bin/bash
+
+while true;
+  do query=`ssh mobile@10.0.0.2 \
+           "sqlite3 /var/mobile/Library/SMS/sms.db '
+            ATTACH DATABASE \"/var/mobile/Library/AddressBook/AddressBook.sqlitedb\" AS sms;
+            SELECT contact.first, contact.last, message.text
+              FROM message LEFT JOIN ( 
+                SELECT ABMultiValue.value,ABPerson.first,ABPerson.last 
+                  FROM ABPerson JOIN ABMultiValue 
+                  ON ABmultiValue.record_id=ABPerson.ROWID ) contact 
+                ON contact.value=SUBSTR(message.address,2,LENGTH(message.address) ) 
+                where message.read=0 AND message.flags=2;
+             ;'"`
+    if [ -n "$query" ]
+    then
+    IFS=$'\n'
+    for line in $query
+      do
+        record=(`echo $line | tr "|" "\n"`)
+        echo "${record[0]} ${record[1]} said '${record[2]}'"
+        python -c "import pynotify; notification = pynotify.Notification('${record[0]} ${record[1]}','${record[2]}', '/home/dylan/scripts/images/sms.png'); notification.show();";
+    done;
+    unset query;
+    fi;
+  sleep 10s;
+done;
+</pre>
+
+<p>The weak point here is that the script depends on knowing the LAN address of the phone, which is likely to change as you move on and off of the network. The script is also vulnerable to injection attacks. It also doesn't handle multiple unread messages or images. But it's a start.</p>

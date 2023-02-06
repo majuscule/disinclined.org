@@ -1,0 +1,25 @@
+---
+layout: note
+---
+
+<p>I set up <a href='http://dylanstestserver.com'>dylanstestserver.com</a> as a test domain. It's a pain to type out, so I planned on switching to <a href='http://dylansserver.com'>dylansserver.com</a>. By the time I got around to this though, the first domain has already been indexed by Google. My deployment process was also engrained with the original domain. This is how I made the migration without losing standing in search engines.</p>
+
+<p>First I added a new virtualhost to Apache's httpd.conf.</p>
+
+<p>I then checked out a new copy of the <i>live</i> branch into a new folder in the webroot.</p>
+
+<p>Next I added a new A record to my DNS, pointing from the new domain to my elastic IP.</p>
+
+<p>Then I restarted Apache and checked that the new address worked. Then I replaced the .htaccess in the original DocumentRoot with a new directive.</p>
+<pre class="brush: bash">
+v .htaccess
+ggcG
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^www\.dylansserver\.com$
+RewriteRule (.*) http://www.dylansserver.com/$1 [R=301,L]
+</pre>
+
+<p>I moved the repository to it's new folder and changed it's post-recieve hook to reflect the new working directory. I also needed to edit my local gitosis-admin/gitosis.conf (and push the changes) to grant myself access to the new repository. Finally, I updated my local repository to point to the new destination.</p>
+<pre class="brush: bash">
+git remote set-url origin git@dylansserver.com:dylansserver
+</pre>

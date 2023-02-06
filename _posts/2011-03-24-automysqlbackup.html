@@ -1,0 +1,69 @@
+---
+layout: note
+---
+
+automysqlbackup
+2011/03/24 01:30AM
+
+<p>I needed a restore solution for my database before launch. I found <a href="https://sourceforge.net/projects/automysqlbackup/">automysqlbackup</a> which does everything I need. Installation took a bit of trial and error, so here's what works:
+
+<pre class="brush: bash">
+curl http://tiny.cc/ey3ap -L > automysqlbackup
+sudo mv automysqlbackup /opt
+sudo ln /opt/automysqlbackup /usr/bin/automysqlbackup -s
+sudo chmod +x /usr/bin/automysqlbackup
+</pre>
+
+<p>Now the script is installed, but is not configured. The settings are read from /etc/automysqlbackup/automysqlbackup.conf, and a sample is inside the script itself, so:</p>
+
+<pre class="brush: bash">
+sudo vim automysqlbackup
+/START CFG
+ma
+/END CFG
+:'a,. y
+:e /etc/automysqlbackup/automysqlbackup.conf
+p
+ggVG:norm 0dw
+:bn :bd :x
+</pre>
+
+<p>All that's left to do here is fill out the information requested by the script and save the file. I wanted the backups written to /var/backups/mysql, so I took a moment to set up the permissions for that.</p>
+
+<pre class="brush: bash">
+sudo mkdir /var/backups/mysql
+sudo chgrp webdev mysql
+sudo chmod 770 mysql
+</pre>
+
+<p>I also noticed that automysqlbackup takes a password variable, but uses mysqldump internally. The man page of mysqldump recommends against passing passwords through the shell. Since this is due to a security issue with ps, I wanted to use the recommended method, a configuration file. I found the dbdump() function in the source of automysqlbackup (line 506 for me), and added a --defaults-file option to the mysqldump call. Due to a bug? this <i>must</i> be the first option given.</p>
+
+<pre class="brush: bash; gutter: true; first-line:505;">
+# Database dump function
+dbdump () {
+${MYSQLDUMP} --defaults-file=/home/dylan/.autobackup.cnf --user=${USERNAME}     --host=${DBHOST} ${OPT} ${1} > ${2}
+return $?
+}
+ 
+</pre>
+
+<p>Then finish up by creating your .cnf file wherever you chose.</p>
+
+<pre class="brush: bash;">
+[client]
+password=your_password
+</pre>
+
+<p>At this point, the automysqlbackup script is all set to go, but will still get rejected by MySQL. There is no reason to that automysqlbackup needs to do anything but read the database to back it up, so create a new user constrained to the loopback address with these rights alone. Make sure this user is set in automysqlbackup.cnf.</p>
+
+<pre class="brush: sql">
+CREATE USER 'autobackup'@'localhost' IDENTIFIED BY 'password';
+GRANT select, lock tables ON *.* TO 'autobackup'@'localhost';
+</pre>
+
+<p>All that's left is to schedule it, so toss it into cron.</p>
+
+<pre class="brush: bash">
+crontab -e
+Go@daily automysqlbackup&lt;Esc&gt;
+</pre>

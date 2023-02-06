@@ -1,6 +1,6 @@
 default: site
 
-site: _site
+build site: _site
 	bundle exec jekyll build -d disinclined.org --trace
 
 serve:

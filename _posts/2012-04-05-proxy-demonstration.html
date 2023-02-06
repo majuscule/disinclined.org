@@ -1,0 +1,105 @@
+---
+layout: note
+---
+
+<p>Proxies are servers that act as intermediaries between clients and other servers. Requests made to the proxy server are made to the content or service provider by the proxy server on behalf of the client.</p>
+
+<p>Before permitting a request on behalf of a client, a proxy server can apply arbitrary rules to filter or authorize traffic. Validated requests can also be altered, as well as content returned to the client.</p>
+
+<p>Proxies can be used for anonymity, bypassing geographical filters, logging, authorization, filtering and caching.</p>
+
+<p>Reverse proxies work on behalf on content or service providers to cache dynamically generated content and load balance applications.  Reverse proxies can also change content served, but generally do not except sometimes compression.</p>
+
+<p>The Tor (The Onion Router) is a layered proxy system intended for anonymity and bypassing harmful filtering. One example of its use is to bypass the Great Firewall of China, a politically purposed firewall administrated by the People's Republic of China, censoring politically sensitive material. The Tor proxy randomly bounces traffic through a network of global volunteer relays. Tor traffic is routed through two nodes before reaching the destination server. The first Tor relay knows the clients IP, but is not privy to the encrypted data.  The intermediary servers are unaware of the origin or data. Exit relays know transmitted data, but not the origin.</p>
+
+<p>This presentation requires a preconfigured Squid server.</p>
+
+<p>(ports are arbitrary everywhere, but standardized by the
+Internet Assigned Numbers Authority (IANA), see /etc/services)</p>
+
+<pre class="brush: bash">
+# Session/Application layer SOCKet Secure (SOCKS) 5 proxy
+#
+
+# Establish a TCP stream to dylansserver.com on port 22
+# Start a SOCKS5 proxy server on port 8080
+#
+# ssh        # secure shell
+# -f         # background command
+# -N         # don't execute a remote command
+#
+ssh -fND 8080 dylan@dylansserver.com
+
+# Make an HTTP GET request using local port 8080
+#
+curl --socks5 localhost:8080 whatismyip.org
+
+# Use root privileges to watch TCP packets
+#
+# sudo       # execute as root user
+# iptables   # dump traffic on a network
+# -vvv       # very very verbose
+# -A         # print each packet in ASCII
+# -i lo      # only print packets using the local network interface
+# -s 0       # don't truncate packets
+# port 8080  # only print packets using port 8080
+#
+sudo tcpdump -vvvA -ilo -s0 port 8080
+
+# Watch HTTP GET requests sent over proxy
+#
+sudo tcpdump -vvvA -ilo -s0 port 8080 | grep -A 10 GET
+
+# Make an HTTP request over proxy
+#
+curl --socks5 localhost:8080 whatismyip.org
+curl --socks5 127.0.0.1:8080 whatismyip.org
+curl --socks5-hostname localhost:8080 whatismyip.org # DNS on proxy
+
+# Use proxy with browser
+#
+v ~/.config/luakit/globals.lua
+
+
+# Network layer tranparent Squid proxy
+# 
+# (connections are whitelisted in /etc/squid/squid.conf,
+# `acl client &lt;IP&gt;
+# http_access allow client`)
+#
+
+# Set kernel ip_forward parameter
+sudo sysctl net/ipv4/ip_forward=1
+
+# Route traffic through remote proxy on local machine
+#
+# iptables               # administration tool for IPv4 packet filtering and NAT
+# -t nat                 # refer to "nat" packet matching table
+# -A OUTPUT              # add to "OUTPUT" table
+# -p tcp                 # match only TCP packets
+# --dport 80             # match only packets destined for port 80
+# -jDNAT                 # jump to "DNAT" target
+# --to 50.16.219.8:3128  # destination network address
+#
+sudo iptables -tnat -AOUTPUT -ptcp --dport 80 -jDNAT --to 50.16.219.8:3128
+
+# -jDNAT          # jump to "REDIRECT" target
+# --to-port 3128  # new destination port
+#
+sudo iptables -tnat -AOUTPUT -ptcp --dport 80 -jREDIRECT --to-port 3128
+
+# Make an HTTP request over proxy
+#
+curl whatismyip.org
+
+# What's an error message look like now?
+#
+curl 'thisisnotawebsite!@#$%^&*()_'
+
+# Use proxy with browser
+#
+
+# Watch it happen
+#
+ssh dl -t "sudo tail -f /var/log/squid/access.log"
+</pre>

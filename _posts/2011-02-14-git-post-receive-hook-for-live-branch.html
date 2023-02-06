@@ -1,0 +1,18 @@
+---
+layout: note
+---
+
+git post-receive hook for live branch
+2011/02/14 01:30AM
+<p> It's easiest to use a git branch to manage the rollout of updates to my website. I wanted to add a message to the `git push` output when the commit is pushed live. The documentation notes that the post-recieve hook has access to the the ref-name. This script is placed in dylanstestserver.git/hooks/post-receive to do this. It took me some time to realize <i>there are no arguments</i>, the information is available on stdin. </p>
+<pre class="brush: bash">
+if ! [ -t 0 ]; then
+  read -a ref
+fi
+IFS='/' read -ra REF <<< "${ref[2]}"
+branch="${REF[2]}"
+if [ "live" == "$branch" ]; then 
+  git --work-tree=/var/www/dylanstestserver.com/ --git-dir=.. checkout -f
+  echo 'Changes pushed live.'
+fi
+</pre>

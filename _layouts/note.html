@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<article class="note">
+  <div class="note-content">
+    <div class="page-title">
+      {% if page.date %}
+      <span class='page-date'>
+          {{ page.date | date: '%Y-%m-%d' }}
+      </span> /
+      {% endif %}
+      <span class='page-title'>
+          <a href="{{ page.url }}">
+      {{ page.title }}
+          </a>
+      </span>
+    </div>
+    <div class='page-content'>
+        {{ content }}
+    </div>
+  </div>
+</article>

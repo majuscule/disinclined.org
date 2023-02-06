@@ -1,0 +1,35 @@
+---
+layout: note
+---
+
+<p>This is how I connected to the Penn. State wireless network (2.0) with GNU/Linux and wpa_supplicant. Here is the network information from PSU:</p>
+
+<p>
+<b>SSID:</b> psu<br>
+<b>Security:</b> WPA2-Enterprise<br>
+<b>Encryption:</b> AES<br>
+<b>Authentication Type:</b> EAP-TTLS<br>
+<b>Authentication Protocol:</b> PAP<br>
+<b>Certificate Authority:</b> Thawte Premium Server CA
+</p>
+
+<p>The following configuration block needs to be entered into /etc/wpa_supplicant.conf:</p>
+
+<pre class="brush: bash">
+network={
+    ssid="psu"
+    identity="your_access_id_here"
+    password="your_password_here"
+    key_mgmt=WPA-EAP
+    eap=TTLS
+    phase2="auth=PAP"
+    ca_cert="/etc/ssl/certs/Thawte_Premium_Server_CA.pem"
+}
+</pre>
+
+Check that your wireless card is up with `ifconfig` and that you are in range of an access point with `iwlist scan`. You can now connect using wpa_supplicant and dhcpcd. Change the following line to use your wireless driver and interface.
+
+<pre class="brush: bash">
+wpa_supplicant -B -D wext -i wlan0 -c /etc/wpa_supplicant.conf
+dhcpcd wlan0
+</pre>

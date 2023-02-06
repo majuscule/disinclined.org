@@ -1,0 +1,19 @@
+---
+layout: note
+---
+
+<p>I've searched for a CMS to use. I want something small, to edit my notes in Vim and sort them easily in code. I finally decided to write a pagination script for the site, and use the MySQL shell to keep track of things. Python scripts take care of the most repetitive tasks.</p>
+<pre class="brush: sql">
+mysql&#62; SHOW tables FROM dylanstestserver;
++----------------------------+
+| Tables_in_dylanstestserver |
++----------------------------+
+| notes                      |
+| comments                   |
++----------------------------+
+2 rows in set (0.00 sec)
+</pre>
+<p>Once everything was running the way I wanted on my development stack, it was a one line command to copy over the database.</p>
+<pre class="brush: bash">
+mysqldump dylanstestserver -p | mysql -u dylan -h dylanstestserver.com -D dylanstestserver -p
+</pre>

@@ -3,7 +3,7 @@
 
   {%- include head.html -%}
 
-  <body>
+  <body onload="return typeof highlight == 'function' ? highlight() : true">
 
     <main>
       <div id="wrapper">

@@ -2,6 +2,23 @@
 layout: note
 ---
 
+<link type='text/css' rel='stylesheet' href='/assets/syntax/styles/shCore.css'>
+<link type='text/css' rel='stylesheet' href='/assets/syntax/styles/shThemeDefault.css'>
+<script type='text/javascript' src='/assets/syntax/scripts/shCore.js'></script>
+<script type='text/javascript' src='/assets/syntax/scripts/shAutoloader.js'></script>
+<script type='text/javascript'>
+  function highlight() {
+    SyntaxHighlighter.autoloader(
+     'js /assets/syntax/scripts/shBrushJScript.js',
+     'bash /assets/syntax/scripts/shBrushBash.js',
+     'sql /assets/syntax/scripts/shBrushSql.js',
+     'cpp /assets/syntax/scripts/shBrushCpp.js');
+    SyntaxHighlighter.defaults['gutter'] = false;
+    SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.all();
+  }
+</script>
+
 {% for page in paginator.posts %}
     <article class="note">
       <div class="note-content">

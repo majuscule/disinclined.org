@@ -1,0 +1,6 @@
+---
+layout: note
+---
+
+<p><a href="https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request">Here</a> is the form to request a custom PTR record for an Amazon EC2 Elastic IP. It's included under <u>Request to Remove Email Sending Limitations</u>, which is not helpful.</p>
+<p>This is good when setting up a mail server in Amazon's cloud. Without this request, the reverse DNS lookup will the default PTR record - something like <a href="http://ec2-50-16-219-8.compute-1.amazonaws.com">ec2-50-16-219-8.compute-1.amazonaws.com</a>. When the reverse DNS record doesn't match the origin domain, mail providers like GMail are likely to mark your mail as spam.</p>
