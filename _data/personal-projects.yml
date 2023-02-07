@@ -2,6 +2,12 @@
   description: |
     64 and 32 bit Netwide Assembly demonstration, in the form of a needlessly complicated hello world featuring a branch, macro and function.
 
+#- name: mud
+#  description: |
+#    Multiuser dungeon demonstration.
+#    <br><br>
+#    Check it out <a href='mud'>here</a>
+
 - name: minimax
   description: |
     Unbeatable tictactoe.
@@ -11,6 +17,7 @@
 - name: dylansserver
   description: |
     The initial instance of this server, which once ran it's namesake virtual domain on a custom MVC framework (it had a few more features then). It also ran my mailserver, DNS server, git server, and automated deployments and backups.
+
 - name: simpletimingattack
   description: |
     This program implements a <a href='http://en.wikipedia.org/wiki/Timing_attack'>simple timing attack</a>. It measures the execution time of a target program over a number of iterations, rotating through a character set and appending the fastest (or slowest) character to the result.
@@ -18,6 +25,8 @@
 - name: cellular-automaton
   description: |
     One and two dimensional cellular automata animated on an HTML canvas. Two dimensional automaton seeds can be drawn on the screen and animated.
+    <br><br>
+    Check it out <a href='cellular-automata'>here</a>
 
 - name: i_like_pandora
   description: |

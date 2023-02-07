@@ -1,0 +1,9 @@
+[submodule "cellular-automata"]
+	path = cellular-automata
+	url = git@github.com:majuscule/cellular-automaton.git
+[submodule "mud"]
+	path = mud
+	url = git@github.com:majuscule/mudd.git
+[submodule "tictactoe"]
+	path = tictactoe
+	url = git@github.com:majuscule/minimax.git
